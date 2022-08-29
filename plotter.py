@@ -1,47 +1,19 @@
 from pyvis.network import Network
 
-net = Network(directed=True)
 
-example_dict = {
-    "dani": [
-        "luisa",
-        "vale",
-        "rosalía"
-    ],
-    "vale": [
-        "luisa",
-        "dani",
-        "sebas",
-        "jose"
-    ],
-    "sebas": [
-        "vale",
-        "jose"
-    ],
-    "jose": [
-        "vale"
-    ],
+class Plotter:
+    def __init__(self, username_images=None):
+        self.username_images = username_images
+        self.net = Network(directed=True)
 
-}
+    def add_follower(self, username, followers):
+        self.net.add_node(username, label=username, shape='circularImage', image=self.username_images.get(username, None))
+        for follower in followers:
+            self.net.add_node(follower, label=follower)
+            self.net.add_edge(follower, username)
 
-example_dict2 = {
-    'a': [
-        'b', 'c', 'd'
-    ]
-}
-
-
-def add_follower(username, followers):
-    net.add_node(username, label=username)
-    for follower in followers:
-        net.add_node(follower, label=follower)
-        net.add_edge(username, follower)
-
-
-def build_graph(dict_to_graph):
-    for username, followers in dict_to_graph.items():
-        add_follower(username, followers)
-    net.show('mygraph.html')
+    def build_graph(self):
+        self.net.show('mygraph.html')
 
 
 
