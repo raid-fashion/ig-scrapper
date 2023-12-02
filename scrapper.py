@@ -1,7 +1,9 @@
 import logging
+import os
 import pickle
 import time
 
+import requests
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -9,10 +11,18 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 MAIN_URL = "http://instagram.com"
+FOLLOWER_CLASS_SELECTOR = ""
+USERNAME_CLASS_SELECTOR = ""
 
 
 def build_followers_url(username: str):
     return f"{MAIN_URL}/{username}/followers"
+
+
+def download_image(image_url, file_path):
+    response = requests.get(image_url)
+    open(file_path+".png", "wb").write(response.content)
+    return
 
 
 class Scrapper:
@@ -50,12 +60,14 @@ class Scrapper:
 
         # TODO: Following and followers
         # TODO: Take children of first child in order to avoid suggestions
-        follower_panels = followers_panel.find_elements(By.CSS_SELECTOR,
-                                                 "._ab8w._ab94._ab97._ab9f._ab9k._ab9p._ab9-._aba8._abcm")
+
+        follower_panels = followers_panel.find_elements(By.CLASS_NAME,
+                                    FOLLOWER_CLASS_SELECTOR.replace(" ", "."))
+
         print(f"{len(follower_panels)} followers were found for {username}")
         followers = []
         for follower_panel in follower_panels:
-            follower_username = follower_panel.find_element(By.CSS_SELECTOR, "._aacl._aaco._aacu._aacx._aada").text
+            follower_username = follower_panel.find_element(By.CLASS_NAME, USERNAME_CLASS_SELECTOR.replace(" ", ".")).text
             try:
                 follower_image = follower_panel.find_element(By.TAG_NAME, "img").get_attribute("src")
             except NoSuchElementException:
@@ -84,7 +96,7 @@ def main():
     user = "valentinafeve"
     scrapper = Scrapper(user)
     scrapper.start_and_log()
-    scrapper.generate_followers_tree(scrapper.username, depth=2, n_scrolls=40)
+    scrapper.generate_followers_tree(scrapper.username, depth=2, n_scrolls=30)
     pickle.dump(scrapper.followers_tree, open(f"followers_tree_{user}.pickle", "wb+"))
     return
 
