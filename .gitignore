@@ -131,3 +131,12 @@ dmypy.json
 *.html
 
 .idea/
+
+# Avoiding .DS_Store files on macOS
+.DS_Store
+
+# Avoiding to upload data from datasets
+data/
+images/
+*.png
+*.csv

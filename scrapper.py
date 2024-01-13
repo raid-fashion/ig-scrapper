@@ -94,7 +94,7 @@ def main():
     scrapper = Scrapper()
     scrapper.build_login()
     for username in usernames:
-        scrapper.scrap(username=username, n_scrolls=1)
+        scrapper.scrap(username=username, n_scrolls=20)
     scrapper.quit()
     return
 
